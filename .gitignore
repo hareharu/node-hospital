@@ -1,0 +1,39 @@
+# Working directories
+build/
+client/
+dist/
+draft/
+files/
+json/
+temp/
+
+# Build information
+buildinfo.md*
+
+# Encryption file
+passkey*
+
+# SQLite database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# NPM lock file
+package-lock.json*
+
+# Logs
+log/
+*.log
+
+# Runtime data
+*.pid
+
+# Dependency directory
+node_modules/
+
+# Eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env

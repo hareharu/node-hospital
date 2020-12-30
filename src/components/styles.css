@@ -1,0 +1,83 @@
+:root {
+  --neutralLight: #eaeaea;
+  --neutralPrimary: #171717;
+  --white: #ffffff;
+}
+
+body button, .ms-Overlay {
+  cursor: initial!important;
+}
+
+.sc-AxiKw {
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+}
+
+.sc-fznyAO {
+  height: calc(100vh - 60px);
+}
+
+.ms-DetailsList .ms-GroupSpacer {
+  border-bottom: 1px solid var(--neutralLight);
+}
+
+.ms-DetailsList .ms-GroupHeader .ms-GroupSpacer {
+  border-bottom: none;
+}
+
+.wh-Icon-display-menu svg {
+  height: 16px;
+  width: 16px;
+  top: 0px;
+  color: var(--neutralPrimary)!important;
+  stroke: var(--neutralPrimary)!important;
+  fill: var(--white)!important;
+}
+
+.wh-Patient-picker, .wh-Patient-picker .ms-Persona {
+  width: 400px;
+}
+
+.wh-Sidemenu-content .ms-Nav-navItem .ms-Nav-navItem .ms-Nav-compositeLink .ms-Button {
+  font-size: 14px;
+  height: 32px;
+  padding-left: 19px;
+}
+
+.wh-Sidemenu-content .ms-Nav-navItem .ms-Nav-compositeLink .ms-Button-icon {
+  height: 24px;
+  width: 24px;
+  position: relative;
+}
+
+.wh-Sidemenu-content .ms-Nav-navItem .ms-Nav-navItem .ms-Nav-compositeLink .ms-Button-icon {
+  height: 16px;
+  width: 16px;
+}
+
+.wh-Sidemenu-content .ms-Nav-navItem .ms-Nav-compositeLink .ms-Button-icon svg {
+  height: 24px;
+  width: 24px;
+  top: -4px;
+  color: var(--neutralPrimary);
+  stroke: var(--neutralPrimary);
+  fill: var(--white);
+}
+
+.wh-Sidemenu-content .ms-Nav-navItem .ms-Nav-navItem .ms-Nav-compositeLink .ms-Button-icon svg {
+  height: 16px;
+  width: 16px;
+  top: 0px;
+  color: var(--neutralPrimary)!important;
+  stroke: var(--neutralPrimary)!important;
+  fill: var(--white)!important;
+}
+
+.wh-Sidemenu-content .ms-Nav-navItems .ms-Nav-compositeLink.is-expanded .ms-Button {
+  border-top: 1px solid var(--neutralLight);
+}
+
+.wh-Sidemenu-content .ms-Nav-navItems .ms-Nav-navItems  { 
+  padding: 0px 0px 10px 0px;
+  border-bottom: 1px solid var(--neutralLight);
+}

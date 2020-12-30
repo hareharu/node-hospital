@@ -1,0 +1,33 @@
+html {
+  background: rgb(244, 244, 244);
+  background-image: url('page.png');
+  background-repeat: repeat-y;
+  overflow-x: hidden;
+}
+
+#tinymce {
+  font-family: serif;
+  width: 21cm;
+  /*min-height: 29.7cm;*/
+  /*margin: 5px auto 20px auto;*/
+  margin: 0px;
+  padding: 0.5cm 1.0cm;
+  display: block;
+  box-sizing: border-box;
+}
+
+@media print {
+
+  html {
+    background: initial;
+    background-image: initial;
+    background-repeat: initial;
+  }
+
+  #tinymce {
+    width: initial;
+    display: initial;
+    box-sizing: initial;
+  }
+
+}

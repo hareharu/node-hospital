@@ -1,0 +1,89 @@
+:root {
+  --neutralLight: #eaeaea;
+  --neutralTertiary: #b0afae;
+  --neutralSecondary: #979695;
+}
+
+.tox-tbtn {
+  height: 30px!important;
+}
+
+.tox-tbtn .feather, .tox-menu .feather {
+  height: 18px!important;
+  fill: none!important;
+  stroke: var(--neutralSecondary)!important;
+  /*
+  fill: red!important;
+  stroke: green!important;
+  color: blue!important;
+  background: yellow!important;
+  */
+}
+
+.tox.tox-silver-sink.tox-tinymce-aux {
+z-index: 1100300!important;
+}
+
+.tox-dialog-wrap{
+  z-index: 110000!important;
+}
+
+.tox-dialog-wrap__backdrop{
+  z-index: 110001!important;
+}
+
+.tox-dialog{
+  z-index: 110002!important;
+}
+
+.tox-tbtn .tox-icon svg:not(.feather), .tox-menu svg:not(.feather) {
+  color: var(--neutralSecondary)!important;
+  fill: var(--neutralSecondary)!important;
+}
+
+.tox-tbtn .tox-icon svg:not(.feather) {
+  margin-top: -3px;
+}
+
+.tox-tbtn .tox-icon {
+  height: 18px!important;
+}
+
+.tox-mbtn {
+  height: 30px!important;
+}
+
+.tox-tbtn:disabled svg:not(.feather), .tox-menu .tox-collection__item--state-disabled svg:not(.feather) {
+  color: var(--neutralTertiary)!important;
+  fill: var(--neutralTertiary)!important;
+}
+
+.tox-tbtn:disabled .feather, .tox-menu .tox-collection__item--state-disabled .feather {
+  stroke: var(--neutralTertiary)!important;
+}
+
+.tox-menubar {
+  height: 35px!important;
+}
+
+.tox-statusbar {
+  border: none!important;
+  border-top: 1px solid var(--neutralLight)!important;
+}
+
+.tox-toolbar {
+  border-top: 1px solid var(--neutralLight)!important;
+}
+.tox .tox-toolbar__group:not(:last-of-type) {
+  border-right: 1px solid var(--neutralLight)!important;
+}
+
+.tox-edit-area {
+  border-top: 1px solid var(--neutralLight)!important;
+}
+
+.tox-tinymce {
+  border: none!important;
+  border-top: 1px solid var(--neutralLight)!important;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px -20px 30px -30px!important;
+}
