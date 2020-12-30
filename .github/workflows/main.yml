@@ -1,0 +1,67 @@
+name: Build&Release
+
+on: [push]
+
+jobs:
+  main:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v1
+    - name: Set env variables
+      env:
+        TZ: Asia/Krasnoyarsk
+      run: |
+        echo "REACT_APP_BUILD=$(date +'%Y%m%d.%H%M')" >> $GITHUB_ENV
+        echo "CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+      shell: bash
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Build client
+      run: |
+        npm install
+        CI=false npm run build
+    - name: Pack release
+      id: packapp
+      run: ./pack-app.ps1
+      shell: pwsh
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: who_${{ env.CURRENT_BRANCH }}_${{ env.REACT_APP_BUILD }}
+        path: temp/
+    - name: Create release
+      if: env.CURRENT_BRANCH == 'master'
+      id: create_release
+      uses: actions/create-release@v1.1.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.REACT_APP_BUILD }}
+        release_name: version ${{ steps.packapp.outputs.version }} build ${{ env.REACT_APP_BUILD }}
+        body: |-
+          ${{ github.event.message }}
+    - name: Upload release
+      if: env.CURRENT_BRANCH == 'master'
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/who_${{ env.CURRENT_BRANCH }}_${{ env.REACT_APP_BUILD }}.zip
+        asset_name: who_${{ env.CURRENT_BRANCH }}_${{ env.REACT_APP_BUILD }}.zip
+        asset_content_type: application/zip
+    - name: Upload changelog
+      if: env.CURRENT_BRANCH == 'master'
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: changelog.md
+        asset_name: changelog.txt
+        asset_content_type: text/plain
