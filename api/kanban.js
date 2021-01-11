@@ -155,7 +155,7 @@ router.get('/board/:id', func.access('user'), (req, res, next) => {
     var board = [];
     for (const column of columns) {
       var cards = await conn.whodb.allSync("select kanbancards.id, kanbancards.columnid, kanbancards.title, kanbancards.description, kanbancards.typeid, kanbantypes.name as typename,\
-                                          coalesce(kanbancards.edited, kanbancards.added) as date, coalesce(userse.name, usersa.name) as user\
+                                          coalesce(kanbancards.edited, kanbancards.added) as date, coalesce(userse.name, usersa.name) as user, kanbancards.comment, kanbancards.deadline\
                                           from kanbancards\
                                           left join kanbantypes on kanbantypes.id = kanbancards.typeid\
                                           left join users userse on userse.id = kanbancards.editedby\
