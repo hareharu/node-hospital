@@ -13,7 +13,8 @@ interface IKanbanBoardProps {
   height?: number;
   width?: string;
   text?: string;
-  readonly?: boolean
+  readonly?: boolean;
+  reload?: boolean;
 }
 
 interface ICard {
@@ -41,7 +42,7 @@ export function KanbanBoard(props: IKanbanBoardProps) {
   const [board, setBoard] = useState<IColumn[]>([]);
   const [username, /**/] = useState(getCookie('name'));
 
-  useEffect(() => getItems('api/kanban/board/'+props.boardid, setBoard, undefined), [ props.boardid ]);
+  useEffect(() => getItems('api/kanban/board/'+props.boardid, setBoard, undefined), [ props.boardid, props.reload ]);
   /*
   let style: CSSProperties = {
     //overflowX: 'hidden',

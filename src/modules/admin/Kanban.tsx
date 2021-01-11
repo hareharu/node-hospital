@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Module, { getItems, getCookie, KanbanBoard, TabsContainer, TabsLinks } from 'components';
+import Module, { getItems, getCookie, KanbanBoard, TabsContainer, TabsLinks, IconButton, Inline } from 'components';
 
 interface IBoard{
   id: string,
@@ -11,19 +11,20 @@ export default function Kanban({...props}) {
   const [tabs, setTabs] = useState<string[]>([]);
   const [user] = useState(getCookie('id'));
   const [tabIndex, setTabIndex] = useState(0);
+  const [reload, forceReload] = useState(true);
 
   useEffect(() => getItems('api/kanban/boards/'+user, (data:IBoard[])=>{
     setBoards(data);
     var newtabs: string[] = [];
     data.forEach(element => newtabs.push(element.name));
     setTabs(newtabs);
-  }), [user]);
+  }), [user, reload]);
 
   return (
     <Module {...props}>
-      <TabsLinks links={tabs} onClick={(value) => setTabIndex(value)} tabIndex={tabIndex}/>
+      <Inline><IconButton icon='refresh-cw' text='Обновить' onClick={()=> forceReload(!reload)}/><TabsLinks links={tabs} onClick={(value) => setTabIndex(value)} tabIndex={tabIndex}/></Inline>
       <TabsContainer tabIndex={tabIndex}>
-        {boards.map(board => <KanbanBoard key={board.id} boardid={board.id} />)}
+        {boards.map(board => <KanbanBoard key={board.id} boardid={board.id} reload={reload}/>)}
       </TabsContainer>
     </Module>
   );
