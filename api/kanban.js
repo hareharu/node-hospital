@@ -126,13 +126,14 @@ router.get('/changeuser/:card/:user', func.access('admin'), (req, res, next) => 
 router.get('/issues/:scope/:userid?', func.access('user'), (req, res, next) => {
   req.query = "select\
               cards.id, cards.id as key, cards.columnid, cards.title, cards.description, cards.added, cards.addedby, cards.edited, cards.editedby, cards.deleted,\
-              cards.columnid, boards.name as boardname, types.name as typename,\
-              boards.userid, users.name as username, cards.user, cards.deadline, cards.comment,\
+              cards.columnid, coalesce(boards.name, '') as boardname, coalesce(types.name, '') as typename,\
+              boards.userid, coalesce(users.name, '') as username, cards.user, coalesce(cards.deadline, '') as deadline, cards.comment,\
               case when cards.deleted is null then columns.title when cards.columnid is null then 'Отменена' else 'Закрыта' end as columnname,\
               case when cards.deleted is not null then 'green'\
-              when cards.deadline is null then 'blue'\
+              when columns.type = 'done' then 'green'\
               when julianday(cards.deadline) - julianday(?) < 0 then 'red'\
-              when julianday(cards.deadline) - julianday(?) = 0 then 'yellow'\
+              when boards.userid is not null and columns.type is null then 'yellow'\
+              else 'blue'\
               end as rowcolor\
               from kanbancards cards\
               left join kanbantypes types on types.id = cards.typeid\
@@ -142,7 +143,7 @@ router.get('/issues/:scope/:userid?', func.access('user'), (req, res, next) => {
               where cards.id is not null";
   if (req.params.scope === 'actual') req.query += " and cards.deleted is null";
   if (req.params.userid) req.query += " and cards.addedby = ?";
-  conn.whodb.all(req.query, func.currentDate(), func.currentDate(), req.params.userid, (error, data) => {
+  conn.whodb.all(req.query, func.currentDate(), req.params.userid, (error, data) => {
     if (error) next(error);
     res.data = data; next();
   });
