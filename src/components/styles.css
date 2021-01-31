@@ -25,6 +25,27 @@ body button, .ms-Overlay {
   border-bottom: none;
 }
 
+.react-kanban-column {
+  display: inline-grid!important;
+  padding-top: 0px;
+  overflow-y: scroll;
+  max-height: calc(100vh - 163px);
+  background-color: #f1f1f1!important;
+  border-top: solid #f1f1f1 2px;
+  border-bottom: solid #f1f1f1 2px;
+}
+
+.react-kanban-column > div:first-child {
+  display: table-cell;
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
+.react-kanban-column > div:last-child {
+  display: table-cell;
+}
+
 .wh-Icon-display-menu svg {
   height: 16px;
   width: 16px;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, CSSProperties } from 'react';
 import Board, { moveCard, addCard, removeCard } from '@lourenci/react-kanban';
 import { Stack, Text, ITextStyles, ActionButton, IconButton } from 'office-ui-fabric-react';
 import { Card, ICardTokens, ICardSectionStyles, ICardSectionTokens  } from '@uifabric/react-cards';
@@ -96,6 +96,15 @@ export function KanbanBoard(props: IKanbanBoardProps) {
       width: '300px',
     }
   };
+  const columnHeaderStyles: CSSProperties = {
+    marginBottom: '10px',
+    background: '#f1f1f1',
+    padding: '10px',
+    marginTop: '-15px',
+    marginLeft: '-5px',
+    marginRight: '-5px',
+    boxShadow: '#f1f1f1 0px 5px 15px 0px',
+  }
   // const sectionStackTokens: IStackTokens = { childrenGap: 20 };
   const cardTokens: ICardTokens = { childrenMargin: 12 };
   const footerCardSectionTokens: ICardSectionTokens = { padding: '0px 0px 0px 12px' };
@@ -215,7 +224,7 @@ export function KanbanBoard(props: IKanbanBoardProps) {
         </Card>
       )}
       renderColumnHeader={({ id, title }) => (
-        <div style={{ marginBottom: '15px' }} >
+        <div style={columnHeaderStyles} >
           <Text variant='large' >
             {title}
           </Text>
