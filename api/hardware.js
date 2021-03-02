@@ -69,7 +69,7 @@ router.get('/infohistory/:device', func.access('user'), (req, res, next) => {
   req.query = "select case\
               when hardwareinfo.value is null then 'Не задано' \
               when hardwaretags.type = 'date' then substr(hardwareinfo.value,9,2)||'.'||substr(hardwareinfo.value,6,2)||'.'||substr(hardwareinfo.value,1,4)\
-              when hardwaretags.type = 'select' then (select name from hardwareselect where class = hardwaretags.class and field = hardwaretags.field and key = hardwareinfo.value)\
+              when hardwaretags.type = 'select' then coalesce((select name from hardwareselect where class = hardwaretags.class and field = hardwaretags.field and key = hardwareinfo.value), hardwareinfo.value)\
               else hardwareinfo.value end as valuestring,\
               hardwareinfo.ondate, coalesce(hardwaretags.name,hardwareinfo.field) as name, hardwareinfo.value, hardwareinfo.timestamp, users.name as username\
               from hardwareinfo\
@@ -374,7 +374,7 @@ router.get('/info/:tags/:id/:parentid?', func.access('user'), (req, res, next) =
   req.query = "select case\
               when hardwareinfo.value is null then 'Не задано' \
               when hardwaretags.type = 'date' then substr(hardwareinfo.value,9,2)||'.'||substr(hardwareinfo.value,6,2)||'.'||substr(hardwareinfo.value,1,4)\
-              when hardwaretags.type = 'select' then (select name from hardwareselect where class = hardwaretags.class and field = hardwaretags.field and key = hardwareinfo.value)\
+              when hardwaretags.type = 'select' then coalesce((select name from hardwareselect where class = hardwaretags.class and field = hardwaretags.field and key = hardwareinfo.value), hardwareinfo.value)\
               else hardwareinfo.value end as valuestring,\
               hardwaretags.name, hardwaretags.type, hardwaretags.class, hardwaretags.field as key, hardwareinfo.deviceid, hardwaretags.field, hardwareinfo.value, hardwareinfo.timestamp, users.name as username\
               from hardwaretags\
