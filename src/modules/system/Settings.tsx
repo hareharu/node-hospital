@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Module, { Table, TabsLinks, TabsContainer, callAPI, callAPIPost, openDialog, openEditPanel, getItems, uuid } from 'components';
+import Module, { Table, TabsLinks, TabsContainer, callAPI, callAPIPost, openDialog, openEditPanel, getItems, uuid, renderFieldType } from 'components';
 
 interface ISetting {
   name: string,
@@ -62,7 +62,7 @@ export default function ModuleSettings({...props}) {
   ];
   const columnsSetting = [
     { key: 'df541f5f-107f-4660-baef-e49032b79aa1', name: 'Код', fieldName: 'name', minWidth: 100, maxWidth: 150, isResizable: true },
-    { key: '29856703-cfe6-40bd-9f5a-4256f9f94653', name: 'Тип', fieldName: 'type', minWidth: 70, maxWidth: 70, isResizable: true },
+    { key: '29856703-cfe6-40bd-9f5a-4256f9f94653', name: 'Тип', fieldName: 'type', minWidth: 70, maxWidth: 70, isResizable: true, onRender: renderFieldType },
     { key: '0f1f7894-58fe-40f8-a283-c33e698ec41b', name: 'Значение', fieldName: 'value', minWidth: 100, maxWidth: 200, isResizable: true },
     { key: '32414418-d2c7-4f00-8d19-e80d65ee1131', name: 'Описание', fieldName: 'description', minWidth: 150, maxWidth: 200, isResizable: true},
   ];
@@ -75,7 +75,7 @@ export default function ModuleSettings({...props}) {
   ];
   const columnsHardwareTag = [
     { key: '1ab452f5-2346-4d88-afb3-d3fe7b8c0b51', name: 'Имя', fieldName: 'name', minWidth: 200, maxWidth: 300, isResizable: true },
-    { key: 'd2d71d05-905b-4c52-884a-fb0207653f6b', name: 'Тип', fieldName: 'type', minWidth: 100, maxWidth: 150, isResizable: true},
+    { key: 'd2d71d05-905b-4c52-884a-fb0207653f6b', name: 'Тип', fieldName: 'type', minWidth: 100, maxWidth: 150, isResizable: true, onRender: renderFieldType },
     { key: '5767209f-5427-4c6e-bb6c-9e36517c4bd2', name: 'Позиция', fieldName: 'pos', minWidth: 50, maxWidth: 100, isResizable: true},
   ];
   useEffect(() => getItems('api/settings/list', setItemsSetting, setLoadingSetting), [reloadSetting]);

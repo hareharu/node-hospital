@@ -267,3 +267,20 @@ export function renderDateTime(item?: any, index?: number, column?: IColumn) {
     return '-';
   }
 }
+
+export function renderFieldType(item?: any, index?: number, column?: IColumn) {
+  if (column !== undefined && column.fieldName !== undefined && item[column.fieldName] !== null) {
+    let type: string;
+    switch (item[column.fieldName]) {
+      case 'input': type = 'Текст'; break;
+      case 'number': type = 'Число'; break;
+      case 'date': type = 'Дата'; break;
+      case 'toggle': type = 'Да/Нет'; break;
+      case 'select': type = 'Список'; break;
+      default: type = '-';
+    }
+    return type;
+  } else {
+    return '-';
+  }
+}
