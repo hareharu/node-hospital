@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Module, { Table, TabsLinks, TabsContainer, callAPI, callAPIPost, openDialog, openEditPanel, getItems, uuid, renderFieldType } from 'components';
+import Module, { Table, TabsLinks, TabsContainer, Tab, Columns, callAPI, callAPIPost, openDialog, openEditPanel, getItems, getItemsPost, uuid, renderFieldType } from 'components';
 
 interface ISetting {
   name: string,
@@ -18,6 +18,14 @@ interface IHardwareTag {
   pos: number,
 }
 
+interface IHardwareSelect {
+  id: string,
+  class: string,
+  field: string,
+  key: string,
+  name: string,
+}
+
 export default function ModuleSettings({...props}) {
   const [itemsSetting, setItemsSetting] = useState<ISetting[]>([]);
   const [loadingSetting, setLoadingSetting] = useState(false);
@@ -27,11 +35,23 @@ export default function ModuleSettings({...props}) {
   const [loadingHardwareTag, setLoadingHardwareTag] = useState(false);
   const [selectedHardwareTag, setSelectedHardwareTag] = useState<IHardwareTag | undefined>(undefined);
   const [reloadHardwareTag, forceReloadHardwareTag] = useState(false);
+  const [itemsHardwareSelect, setItemsHardwareSelect] = useState<IHardwareSelect[]>([]);
+  const [loadingHardwareSelect, setLoadingHardwareSelect] = useState(false);
+  const [selectedHardwareSelect, setSelectedHardwareSelect] = useState<IHardwareSelect | undefined>(undefined);
+  const [reloadHardwareSelect, forceReloadHardwareSelect] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const onSelectSetting = (item: ISetting | undefined) => setSelectedSetting(item);
   const onResetSetting = () => openDialog('Сброс параметра', 'Параметр будет сброшен к значению по умолчанию.', () => callAPI('api/settings/reset/'+selectedSetting?.name, undefined, () => forceReloadSetting(!reloadSetting)));
   const onEditSetting = () => openDialog('Изменение параметра', 'Укажите новое значение', (value) => callAPIPost('api/settings/value/'+selectedSetting?.name, { value }, undefined, ()=> forceReloadSetting(!reloadSetting)), selectedSetting?.type, selectedSetting?.value);
-  const onSelectHardwareTag = (item: IHardwareTag | undefined) => setSelectedHardwareTag(item);
+  const onSelectHardwareTag = (item: IHardwareTag | undefined) => {
+    setSelectedHardwareTag(item);
+    if (item?.type == 'select') {
+      getItemsPost('api/settings/hardware/select', item, setItemsHardwareSelect, setLoadingHardwareSelect);
+    } else {
+      setItemsHardwareSelect([]);
+      setLoadingHardwareSelect(false);
+    }
+  }
   const onDeleteHardwareTag = () => openDialog('Удаление параметра', 'Параметр "'+selectedHardwareTag?.name+'" будет удален.', () => callAPIPost('api/settings/hardware/tags/delete/'+selectedHardwareTag?.id, undefined, undefined, () => forceReloadHardwareTag(!reloadHardwareTag)));
   const onEditHardwareTag = () => openEditPanel(
     (selectedHardwareTag ? 'Изменить': 'Добавить' )+' параметр', [
@@ -54,7 +74,13 @@ export default function ModuleSettings({...props}) {
       { key: 'pos', type: 'number', value: selectedHardwareTag?.pos.toString() || '0', label: 'Позиция' }
     ], (values: IHardwareTag) => callAPIPost('api/settings/hardware/tags/'+(selectedHardwareTag?'update':'insert')+'/'+(selectedHardwareTag?.id || uuid()), values, undefined, () => forceReloadHardwareTag(!reloadHardwareTag))
     , ['class', 'name', 'type']);
-  const onEditHardwareSelect = () => {}
+  const onSelectHardwareSelect = (item: IHardwareSelect | undefined) => setSelectedHardwareSelect(item);
+  const onDeleteHardwareSelect = () => openDialog('Удаление варианта', 'Вариант "'+selectedHardwareSelect?.name+'" будет удален.', () => callAPIPost('api/settings/hardware/select/delete/'+selectedHardwareSelect?.id, undefined, undefined, () => forceReloadHardwareSelect(!reloadHardwareSelect)));
+  const onEditHardwareSelect = () => openDialog(
+    (selectedHardwareSelect ? 'Изменить': 'Добавить' )+' вариант', 'Введите имя варианта.',
+    (value) => callAPIPost('api/settings/hardware/select/'+(selectedHardwareSelect?'update':'insert')+'/'+(selectedHardwareSelect?.id || uuid()), { class: selectedHardwareTag?.class, field: selectedHardwareTag?.field, name: value }, undefined, () => forceReloadHardwareSelect(!reloadHardwareSelect)),
+    'input', selectedHardwareSelect?.name
+  );
   const commandsSetting = [
     { disabled: !selectedSetting, key: 'edit', name: 'Изменить', iconProps: { iconName: 'icon-edit-2' }, onClick: onEditSetting },
     { disabled: !selectedSetting, key: 'reset', name: 'Сбросить', iconProps: { iconName: 'icon-trash' }, onClick: onResetSetting },
@@ -70,7 +96,6 @@ export default function ModuleSettings({...props}) {
     { disabled: selectedHardwareTag !== undefined, key: 'add', name: 'Добавить', iconProps: { iconName: 'icon-plus' }, onClick: onEditHardwareTag },
     { disabled: !selectedHardwareTag, key: 'edit', name: 'Изменить', iconProps: { iconName: 'icon-edit-2' }, onClick: onEditHardwareTag },
     { disabled: !selectedHardwareTag, key: 'reset', name: 'Удалить', iconProps: { iconName: 'icon-trash' }, onClick: onDeleteHardwareTag },
-    { disabled: !selectedHardwareTag || selectedHardwareTag.type != 'select', key: 'select', name: 'Значения', iconProps: { iconName: 'icon-clipboard' }, onClick: onEditHardwareSelect },
     { key: 'refresh', name: 'Обновить', iconProps: { iconName: 'icon-refresh-cw' }, onClick: () => forceReloadHardwareTag(!reloadHardwareTag) },
   ];
   const columnsHardwareTag = [
@@ -78,14 +103,29 @@ export default function ModuleSettings({...props}) {
     { key: 'd2d71d05-905b-4c52-884a-fb0207653f6b', name: 'Тип', fieldName: 'type', minWidth: 100, maxWidth: 150, isResizable: true, onRender: renderFieldType },
     { key: '5767209f-5427-4c6e-bb6c-9e36517c4bd2', name: 'Позиция', fieldName: 'pos', minWidth: 50, maxWidth: 100, isResizable: true},
   ];
+  const commandsHardwareSelect = [
+    { disabled: !selectedHardwareTag || selectedHardwareTag?.type !== 'select' || selectedHardwareSelect !== undefined, key: 'add', name: 'Добавить', iconProps: { iconName: 'icon-plus' }, onClick: onEditHardwareSelect },
+    { disabled: !selectedHardwareSelect, key: 'edit', name: 'Изменить', iconProps: { iconName: 'icon-edit-2' }, onClick: onEditHardwareSelect },
+    { disabled: !selectedHardwareSelect, key: 'reset', name: 'Удалить', iconProps: { iconName: 'icon-trash' }, onClick: onDeleteHardwareSelect },
+    { disabled: !selectedHardwareTag || selectedHardwareTag?.type !== 'select', key: 'refresh', name: 'Обновить', iconProps: { iconName: 'icon-refresh-cw' }, onClick: () => forceReloadHardwareSelect(!reloadHardwareSelect) },
+  ];
+  const columnsHardwareSelect = [
+    { key: '2f273347-99a0-4b24-a195-478b51bb044f', name: 'Имя', fieldName: 'name', minWidth: 200, maxWidth: 300, isResizable: true },
+  ];
   useEffect(() => getItems('api/settings/list', setItemsSetting, setLoadingSetting), [reloadSetting]);
   useEffect(() => getItems('api/settings/hardware/tags', setItemsHardwareTag, setLoadingHardwareTag), [reloadHardwareTag]);
+  useEffect(() => getItemsPost('api/settings/hardware/select', selectedHardwareTag, setItemsHardwareSelect, setLoadingHardwareSelect), [reloadHardwareSelect]);
   return (
     <Module {...props}>
       <TabsLinks links={['Система', 'Оборудование']} onClick={(value) => setTabIndex(value)} tabIndex={tabIndex}/>
       <TabsContainer tabIndex={tabIndex}>
         <Table commands={commandsSetting} onSelect={onSelectSetting} items={itemsSetting} columns={columnsSetting} loading={loadingSetting}/>
-        <Table commands={commandsHardwareTag} onSelect={onSelectHardwareTag} items={itemsHardwareTag} columns={columnsHardwareTag} loading={loadingHardwareTag} grouped={true}/>
+        <Tab>
+          <Columns width={['60%', '40%']} height='100%'>
+            <Table commands={commandsHardwareTag} onSelect={onSelectHardwareTag} items={itemsHardwareTag} columns={columnsHardwareTag} loading={loadingHardwareTag} grouped={true}/>
+            <Table commands={commandsHardwareSelect} onSelect={onSelectHardwareSelect} items={itemsHardwareSelect} columns={columnsHardwareSelect} loading={loadingHardwareSelect} hideHeader={true}/>
+          </Columns>
+        </Tab>
       </TabsContainer>
     </Module>
   );
