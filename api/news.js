@@ -5,7 +5,7 @@ var timestamp = require('timestamp-zoned');
 
 router.get('/list', func.access('guest'), (req, res, next) => {
   req.query = "select news.id, news.id as key, news.name, news.text, news.day, coalesce(news.hide, '') as hide, news.categoryid, newscategory.name as category, coalesce(news.edited, news.added) as modified\
-              from news left join newscategory on newscategory.id = news.categoryid where news.deleted is null order by news.day desc";  
+              from news left join newscategory on newscategory.id = news.categoryid where news.deleted is null order by news.day desc, coalesce(news.edited, news.added) desc";  
   conn.whodb.all(req.query, (error, data) => {
     if (error) next(error);
     res.data = data; next();
@@ -21,7 +21,7 @@ router.get('/list/:id', func.access('guest'), (req, res, next) => {
 });
 
 router.get('/last', func.access('guest'), (req, res, next) => {
-  req.query = "select *, coalesce(edited, added) as modified from news where deleted is null and (hide is null or hide >= ?) order by day desc limit 1";  
+  req.query = "select *, coalesce(edited, added) as modified from news where deleted is null and (hide is null or hide >= ?) order by day desc, coalesce(edited, added) desc limit 1";  
   conn.whodb.all(req.query, func.currentDate(), (error, data) => {
     if (error) next(error);
     res.data = data; next();
