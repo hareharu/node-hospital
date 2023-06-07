@@ -9,17 +9,19 @@ var getVideo = (tr, vcs, all, filter) => {
       tr.childNodes.forEach(td => {
         if (td.tagName && td.tagName === 'td') {
           if (td.classNames) {
-            switch (td.classNames[0]) {
-              case 'tech': vcs.tech = td.childNodes[0].rawText; break;
-              case 'time': vcs.time = td.childNodes[0].rawText; break;
-              case 'theme': vcs.theme = td.childNodes[0].rawText; break;
-              case 'table-link':
-                vcs.link = td.childNodes[1].rawText;
-                var link = td.childNodes.find((childNode) => childNode.tagName === 'a');
-                if (link) vcs.linkurl = link.rawAttrs.replace('href="', '').replace('"', '');
-                break;
-              default: vcs.mo = td.childNodes[0].rawText;
-            }
+            try {
+              switch (td.classNames[0]) {
+                case 'tech': vcs.tech = td.childNodes[0].rawText; break;
+                case 'time': vcs.time = td.childNodes[0].rawText; break;
+                case 'theme': vcs.theme = td.childNodes[0].rawText; break;
+                case 'table-link':
+                  vcs.link = td.childNodes[1].rawText;
+                  var link = td.childNodes.find((childNode) => childNode.tagName === 'a');
+                  if (link) vcs.linkurl = link.rawAttrs.replace('href="', '').replace('"', '');
+                  break;
+                default: vcs.mo = td.childNodes[0].rawText;
+              }
+            } catch { }
           }
         }
       });
@@ -56,7 +58,11 @@ router.get('/list', func.access('guest'), (req, res, next) => {
     root = root.querySelector('html');
     var list = [];
     var group = '';
-    if (!root.childNodes) return res.json({ status: 'ok', data: list });
+    try {
+      if (!root.childNodes) return res.json({ status: 'ok', data: list });
+    } catch {
+      return res.json({ status: 'ok', data: list });
+    }
     root.childNodes.forEach(conf => {
       if (conf.tagName && conf.tagName === 'tbody') {
         var vcs = { rowgroup: group };
