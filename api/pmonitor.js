@@ -55,30 +55,32 @@ router.get('/users', func.access('admin'), (req, res, next) => {
     var sessions = [];
     if (data) {
       data.forEach(session => {
-        var row = { expired: session.expired };
-        if (session.sess) {
-          var sess = JSON.parse(session.sess);
-          if(sess.app) {
-            row.ip = sess.app.ip;
-            row.client = sess.app.client;
-            row.build = sess.app.build;
-            row.module = sess.app.module;
-            row.rowcolor = sess.app.client !== process.env.SERVER_VERSION ? 'yellow' : undefined;
-          } else {
-            row.rowcolor = 'red';
-          }
-          if (sess.user) {
-            row.user = sess.user.name;
-            row.role = sess.user.role;
-            row.access = sess.user.access;
-            switch (sess.user.access) {
-              case 'admin': row.accessname = 'Администратор'; break;
-              case 'doctor': row.accessname = 'Медработник'; break;
-              default: row.accessname = 'Пользователь';
+        if (session.sess != "folder") {  
+          var row = { expired: session.expired };
+          if (session.sess) {
+            var sess = JSON.parse(session.sess);
+            if(sess.app) {
+              row.ip = sess.app.ip;
+              row.client = sess.app.client;
+              row.build = sess.app.build;
+              row.module = sess.app.module;
+              row.rowcolor = sess.app.client !== process.env.SERVER_VERSION ? 'yellow' : undefined;
+            } else {
+              row.rowcolor = 'red';
+            }
+            if (sess.user) {
+              row.user = sess.user.name;
+              row.role = sess.user.role;
+              row.access = sess.user.access;
+              switch (sess.user.access) {
+                case 'admin': row.accessname = 'Администратор'; break;
+                case 'doctor': row.accessname = 'Медработник'; break;
+                default: row.accessname = 'Пользователь';
+              }
             }
           }
+          sessions.push(row);
         }
-        sessions.push(row);
       });
     }
     res.json({ status: 'ok', data: sessions });
