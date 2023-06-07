@@ -41,7 +41,7 @@ module.exports = (name, pass, result) => {
         .one('select count(*) from pg_authid where rolname = $1 and rolpassword = $2', [name, 'md5' + md5(pass + name)])
         .then(data => {
           if (data.count === 0) return result(null);
-          conn.pgsql.one('select trim(login) as login, coalesce(trim(user_), trim(login)) as name from user_ where login = $1', name)
+          conn.pgsql.one('select trim(login) as login, coalesce(trim(user_), trim(login)) as name from user_ where login = $1 limit 1', name)
           .then(guzuser => {
             conn.whodb.get("select users.id, roles.name as role, roles.access, users.doctor, roles.departmentid as dept, users.authtype as auth from users left join roles on users.roleid = roles.id where users.login = ? and users.authtype = 'guz'", name, (error, user) => {
               if (error) return result();
