@@ -2,6 +2,11 @@ var router = require('express').Router();
 var func = require('../app/func');
 var parser = require('node-html-parser');
 var https = require('https');
+var fs = require('fs');
+
+if (!fs.existsSync('templates')) {
+  fs.mkdirSync('templates');
+}
 
 router.get('/login', func.access('guest'), (req, res, next) => {
   var authorization = JSON.stringify({
@@ -78,7 +83,7 @@ router.get('/list', func.access('guest'), async (req, res, next) => {
             var date = info.querySelector('.about').rawText;
             var index = date.indexOf("Создан: ") + 8;
             date = date.substring(index, index + 16);
-            var filepath = "temp/" + path.parse(name).name + " (" + date.replace(':', '') + ")" + path.parse(name).ext;
+            var filepath = "templates/" + path.parse(name).name + " (" + date.replace(':', '') + ")" + path.parse(name).ext;
             list.push({key: func.uuid(), id, name, date, rowgroup: header, path : filepath, filter : header + " - " + name});
           });
         });
@@ -95,7 +100,6 @@ router.get('/list', func.access('guest'), async (req, res, next) => {
 
 router.post('/file/:idupload', func.access('guest'), async (req, res, next) => {
   var filename = req.body.filepath;
-  var fs = require("fs");
   if (!fs.existsSync(filename)) {
     var sessionid = await func.getSettings('kkbparser_sessionid');
     var options = {

@@ -40,3 +40,6 @@ node_modules/
 
 # Visual Studio Code temporary folder
 .vs/
+
+# Downloaded templates
+templates/
