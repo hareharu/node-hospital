@@ -3,6 +3,7 @@ import Hardware from './admin/Hardware';
 import IssueTracker from './admin/IssueTracker';
 import MyIssues from './admin/MyIssues';
 import Kanban from './admin/Kanban';
+import KKBTemplates from './admin/KKBTemplates';
 import Passwords from './admin/Passwords';
 import PhoneBook from './admin/PhoneBook';
 import QueryDB from './admin/QueryDB';
@@ -49,7 +50,8 @@ export const modules = [ // key: код модуля       access: доступ 
   { module: KMIACVideo,     key: 'kmiacvideo',    access: 'guest',    icon: 'menu-monitor-yellow',    name: 'Видеоконференции',       title: '' },
   { module: PhoneBook,      key: 'phonebook',     access: 'guest',    icon: 'menu-book-yellow',       name: 'Телефонный справочник',  title: '' },
   { module: HBookMKB,       key: 'hbookmkb',      access: 'guest',    icon: 'menu-archive-yellow',    name: 'Справочник МКБ',         title: 'Поиск по справочнику МКБ10' },
-
+  { module: KKBTemplates,   key: 'kkbtemplates',  access: 'guest',    icon: 'menu-file-red',          name: 'Шаблоны направлений',    title: 'Шаблоны направительной документации для поликлиники дистанционного консультирования ККБ' },
+  
   { module: HomeLinks,      key: 'homelinks',     access: 'user',     icon: 'menu-globe-green',       name: 'Домашняя страница',      title: 'Редактирование ссылок выводимых на домашней странице' },
   { module: MyIssues,       key: 'myissues',      access: 'user',     icon: 'menu-list-green',        name: 'Мои задачи',             title: '' },
   { module: NewsBoard,      key: 'newsboard',     access: 'user',     icon: 'menu-calendar-green',    name: 'Новости и объявления',   title: '' },

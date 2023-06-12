@@ -10,6 +10,7 @@ var settings = {
   system_sessiontime: { type: 'number', description: 'Время жизни сессии в минутах', default: '60'},
   kmiacvideo_filter: { type: 'input', description: 'Фильтр для модуля "Видеоконференции"', default: ''},
   loginform_tip: { type: 'input', description: 'Сообщение на кнопке авторизации', default: ''},
+  kkbparser_sessionid: { type: 'input', description: 'PHPSESSID для запросов на портале ККБ', default: ''},
 };
 
 var init = async () => {

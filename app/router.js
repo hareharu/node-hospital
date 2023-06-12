@@ -23,6 +23,7 @@ if (fs.existsSync(process.env.FPR_BASE) === true) router.use('/fprocessor', requ
 router.use('/hardware', require('../api/hardware'));
 router.use('/homelinks', require('../api/homelinks'));
 router.use('/kanban', require('../api/kanban'));
+router.use('/kkbparser', require('../api/kkbparser'));
 router.use('/news', require('../api/news'));
 router.use('/passwords', require('../api/passwords'));
 router.use('/patient', require('../api/patient'));
