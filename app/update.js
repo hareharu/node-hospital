@@ -29,11 +29,21 @@ var run = async () => {
   });
   if (currentversion !== actualversion) {
     for (var i = currentversion + 1; i <= actualversion; i++) {
-      var updatesql = fs.readFileSync(path.join('sql', 'update_db_to_v' + i + '.sql'));
-      await conn.whodb.execSync(updatesql.toString());
-      await conn.whodb.runSync("PRAGMA user_version = ?", i);
+      try {
+        var updatesql = fs.readFileSync(path.join('sql', 'update_db_to_v' + i + '.sql'));
+        await conn.whodb.execSync(updatesql.toString());
+        await conn.whodb.runSync("PRAGMA user_version = " + i);
+        currentversion = i;
+      } catch {
+        console.log('Не удалось применить обновление базы данных до версии ' + i + '.');
+        break;
+      }
     }
-    console.log('База данных обновлена до версии ' + actualversion + '.');
+    if (currentversion !== actualversion) {
+      console.log('Во время обновления бызы данных произошла ошибка.');
+    } else{
+      console.log('База данных обновлена до версии ' + actualversion + '.');
+    }
   } else {
     console.log('Обновление базы данных не требуется.');
   }
