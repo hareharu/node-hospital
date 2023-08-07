@@ -1,5 +1,6 @@
 // Администрирование информационных систем и прочие IT дела
 import Hardware from './admin/Hardware';
+import InfoScreens from './admin/InfoScreens';
 import IssueTracker from './admin/IssueTracker';
 import MyIssues from './admin/MyIssues';
 import Kanban from './admin/Kanban';
@@ -56,6 +57,7 @@ export const modules = [ // key: код модуля       access: доступ 
   { module: MyIssues,       key: 'myissues',      access: 'user',     icon: 'menu-list-green',        name: 'Мои задачи',             title: '' },
   { module: NewsBoard,      key: 'newsboard',     access: 'user',     icon: 'menu-calendar-green',    name: 'Новости и объявления',   title: '' },
   { module: Hardware,       key: 'hardware',      access: 'user',     icon: 'menu-monitor-green',     name: 'Оборудование',           title: '' },
+  { module: InfoScreens,    key: 'infoscreens',   access: 'user',     icon: 'menu-monitor-green',     name: 'Информационные экраны',  title: 'Редактирование расписания для отображения на информационных экранах' },
   { module: FProcExam,      key: 'fprocexam',     access: 'user',     icon:	'menu-graph-green',       name: 'Реестры ДД и ПО',        title: 'Сводная информация по принятым случаям диспансеризации и профосмотров' },
   { module: FProcSend,      key: 'fprocsend',     access: 'user',     icon: 'menu-floppy-green',      name: 'Информационный обмен',   title: 'Мониторинг файлов отправленных в ЦОР' },
   { module: Schedule,       key: 'schedule',      access: 'user',     icon: 'menu-list-green',        name: 'Расписание приема',      title: 'Редактирование расписания приема врачей' },

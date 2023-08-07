@@ -168,17 +168,69 @@ router.get('/updatehtml/:date', func.access('admin'), async (req, res, next) => 
   .catch(next);
 });
 
-router.post('/groups/:type/:action/:id', func.access('user'), (req, res, next) => {
+router.get('/infoscreen/:id/:fontsize?', func.access('guest'), async (req, res, next) => {
+  const table = await conn.whodb.getSync("select * from schedulegroups where id = ?", req.params.id);
+  var header = '';
+  if (table.uch === 'true') header += '<td style="width: 5%;">уч</td>';
+  if (table.room === 'true') header += '<td style="width: 5%;">каб</td>';
+  if (table.spec === 'true') header += '<td style="width: 10%;">спец</td>';
+  header += '<td>'+table.title+'</td>';
+  header += '<td style="width: 10%;">пн</td>';
+  if (table.days > 1) header += '<td style="width: 10%;">вт</td>';
+  if (table.days > 2) header += '<td style="width: 10%;">ср</td>';
+  if (table.days > 3) header += '<td style="width: 10%;">чт</td>';
+  if (table.days > 4) header += '<td style="width: 10%;">пт</td>';
+  if (table.days > 5) header += '<td style="width: 10%;">сб</td>';
+  if (table.days > 6) header += '<td style="width: 10%;">вс</td>';
+  html = '<html><head><title>'+req.params.id+'</title></head><body style="margin: 0%; overflow: hidden; font-family: Helvetica,Arial,sans-serif; color: #000000;">';
+  html += '<table style="height: 100%; width: 100%; table-layout: fixed; border-collapse: collapse; border-color: #000000; background-color: #ffffff;\
+          text-align: center; border-style: double; line-height: 1.1;'+(req.params.fontsize ? ' font-size: '+req.params.fontsize+'pt;' : '')+'"\
+          border="1" cellspacing="1" cellpadding="1">';
+  html += '<thead><tr class="tr-header" style="height: calc(5vh); font-size: calc(4vh); background-color: #f3f4f6;">'+header+'</tr></thead>';
+  html += '<tfoot><tr class="tr-footer" style="height: calc(5vh); font-size: calc(4vh); background-color: #f3f4f6;">'+header+'</tr></tfoot>';
+  const docs = await conn.whodb.allSync("select * from schedule where groupid = ? order by pos", req.params.id);
+  for (const doc of docs) {  
+    html += '<tr class="tr-doc-6" style="height: calc(90vh / '+docs.length+'); background-color: '+(doc.code ? doc.code : '#ffffff')+';">';
+    if (table.uch === 'true') html += '<td style="width: 5%;">'+(doc.uch ? doc.uch : '—')+'</td>';
+    if (table.room === 'true') html += '<td style="width: 5%;">'+(doc.room ? doc.room : '—')+'</td>';
+    if (table.spec === 'true') html += '<td style="width: 10%;">'+(doc.spec ? doc.spec : '—')+'</td>';
+    html += '<td>'+(doc.name ? doc.name : '—')+'</td>';
+    if (doc.day0) {
+      html += '<td style="width: 50%;" colspan="'+table.days+'">'+doc.day0+'</td>';
+    } else {
+      html += '<td style="width: 10%;">'+(doc.day1 ? doc.day1 : '—')+'</td>';
+      if (table.days > 1) html += '<td style="width: 10%;">'+(doc.day2 ? doc.day2 : '—')+'</td>';
+      if (table.days > 2) html += '<td style="width: 10%;">'+(doc.day3 ? doc.day3 : '—')+'</td>';
+      if (table.days > 3) html += '<td style="width: 10%;">'+(doc.day4 ? doc.day4 : '—')+'</td>';
+      if (table.days > 4) html += '<td style="width: 10%;">'+(doc.day5 ? doc.day5 : '—')+'</td>';
+      if (table.days > 5) html += '<td style="width: 10%;">'+(doc.day6 ? doc.day6 : '—')+'</td>';
+      if (table.days > 6) html += '<td style="width: 10%;">'+(doc.day7 ? doc.day7 : '—')+'</td>';
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  html += '</body></html>';
+  res.send(html);
+});
+
+router.post('/groups/:type/:action/:id',  func.access('user'), async (req, res, next) => {
+  if (req.body.days < 1) req.body.days = 1;
+  if (req.body.days > 7) req.body.days = 7;
   switch (req.params.action) {
     case 'insert':
-      req.query = "insert into schedulegroups (pos, name, id, type) values (?, ?, ?, ?)";
-      req.params = [ req.body.pos, req.body.name, req.params.id, req.params.type ];
+      req.query = "insert into schedulegroups (pos, name, title, room, uch, spec, days, id, type) values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      req.params = [ req.body.pos, req.body.name, req.body.title, req.body.room, req.body.uch, req.body.spec, req.body.days, req.params.id, req.params.type ];
       break;
     case 'update':
-      req.query = "update schedulegroups set pos = ?, name = ? where id = ? and type = ?";
-      req.params = [ req.body.pos, req.body.name, req.params.id, req.params.type ];
+      req.query = "update schedulegroups set pos = ?, name = ?, title = ?, room = ?, uch = ?, spec = ?, days = ? where id = ? and type = ?";
+      req.params = [ req.body.pos, req.body.name, req.body.title, req.body.room, req.body.uch,  req.body.spec, req.body.days, req.params.id, req.params.type ];
       break;
     case 'delete':
+      var num = await conn.whodb.oneSync("select count(*) from schedule where groupid = ?", req.params.id);
+      if (num > 0) {
+        console.log("Невозможно удалить группу содержащую записи о врачах");
+        return res.sendStatus(405);
+      }
       req.query = "delete from schedulegroups where id = ? and type = ?";
       req.params = [ req.params.id, req.params.type ];
       break;
@@ -191,7 +243,7 @@ router.post('/groups/:type/:action/:id', func.access('user'), (req, res, next) =
 });
 
 router.post('/doctors/:type/:action/:id', func.access('user'), (req, res, next) => {
-  if (req.body.code === '' || req.body.code === '00000000-0000-0000-0000-000000000000') req.body.code = null;
+  if (req.body.params === 'guz' && req.body.code === '00000000-0000-0000-0000-000000000000') req.body.code = null;
   if (req.body.uch === '') req.body.uch = null;
   if (req.body.room === '') req.body.room = null;
   if (req.body.spec === '') req.body.spec = null;
@@ -237,8 +289,8 @@ router.get('/groups/:type', func.access('user'), (req, res, next) => {
 router.get('/doctors/:type', func.access('user'), (req, res, next) => {
   req.query = "select schedule.*, schedule.id as key, coalesce(schedulegroups.name, 'Без группы') as rowgroup,\
               case\
+              when schedule.name is null then 'red'\
               when schedule.code is null then 'blue'\
-              when schedule.name  is null then 'red'\
               else '' end as rowcolor\
               from schedule\
               left join schedulegroups on schedulegroups.id = schedule.groupid\

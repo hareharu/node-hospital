@@ -5,10 +5,15 @@ CREATE TABLE "schedulegroups" (
 	"pos"	INTEGER,
   "type"	TEXT,
 	"name"	TEXT,
+  "title"	TEXT,
+  "days" INTEGER,
+  "room" INTEGER,
+  "uch" INTEGER,
+  "spec" INTEGER,
 	PRIMARY KEY("id")
 );
-INSERT INTO "schedulegroups" ("id", "pos", "type", "name")
-	SELECT "id", "pos", "guz" as "type", "name"
+INSERT INTO "schedulegroups" ("id", "pos", "type", "name", "title", "days", "room", "uch", "spec")
+	SELECT "id", "pos", "guz", "name", "врач", 5, "true", "true", "true"
 	FROM "_schedulegroups";
 DROP TABLE "_schedulegroups";
 COMMIT;
