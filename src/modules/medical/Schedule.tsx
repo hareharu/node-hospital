@@ -79,26 +79,26 @@ export default function ModuleSchedule({...props}) {
     { key: 'aafe5a2e-3bc3-4262-9503-f296cf069e2f', name: 'Вс', fieldName: 'day7', onRender: renderTimeInterval, minWidth: 80, maxWidth: 100, isResizable: true },
   ];
 
-  useEffect(() => getItems('api/schedule/site/groups', setItemsGroups, setLoadingGroups), [reloadGroups]);
-  useEffect(() => getItems('api/schedule/site/doctors', setItemsDoctors, setLoadingDoctors), [reloadDoctors]);
+  useEffect(() => getItems('api/schedule/groups/guz', setItemsGroups, setLoadingGroups), [reloadGroups]);
+  useEffect(() => getItems('api/schedule/doctors/guz', setItemsDoctors, setLoadingDoctors), [reloadDoctors]);
 
   const onSelectDoctor = (item: IDoctor | undefined) => setSelectedDoctor(item);
   const onSelectGroup = (item: IGroup | undefined) => setSelectedGroup(item);
 
-  const onDeleteGroup = () => openDialog('Удаление', 'Группа "'+selectedGroup?.name+'" будет удалена из списка.', () => callAPIPost('api/schedule/site/groups/delete/'+selectedGroup?.id, { }, undefined, () => forceReloadGroups(!reloadGroups)));
-  const onDeleteDoctor = () => openDialog('Удаление', 'Запись "'+selectedDoctor?.name+'" будет удалена из списка.', () => callAPIPost('api/schedule/site/doctors/delete/'+selectedDoctor?.id, { }, undefined, () => forceReloadDoctors(!reloadDoctors)));
+  const onDeleteGroup = () => openDialog('Удаление', 'Группа "'+selectedGroup?.name+'" будет удалена из списка.', () => callAPIPost('api/schedule/groups/guz/delete/'+selectedGroup?.id, { }, undefined, () => forceReloadGroups(!reloadGroups)));
+  const onDeleteDoctor = () => openDialog('Удаление', 'Запись "'+selectedDoctor?.name+'" будет удалена из списка.', () => callAPIPost('api/schedule/doctors/guz/delete/'+selectedDoctor?.id, { }, undefined, () => forceReloadDoctors(!reloadDoctors)));
   
   const onEditGroup = () => openEditPanel(
     (selectedGroup ? 'Изменить': 'Добавить' )+' группу', [
       { key: 'pos', type: 'number', value: selectedGroup?.pos.toString() || '0', label: 'Позиция' },
       { key: 'name', type: 'text', value: selectedGroup?.name, label: 'Имя' },
-    ], (values: IGroup) => callAPIPost('api/schedule/site/groups/'+(selectedGroup?'update':'insert')+'/'+(selectedGroup?.id || uuid()), values, undefined, () => forceReloadGroups(!reloadGroups)),
+    ], (values: IGroup) => callAPIPost('api/schedule/groups/guz/'+(selectedGroup?'update':'insert')+'/'+(selectedGroup?.id || uuid()), values, undefined, () => forceReloadGroups(!reloadGroups)),
     [ 'name' ]
   );
 
   const onEditDoctor = () => openEditPanel(
     (selectedDoctor ? 'Изменить': 'Добавить' )+' запись', [
-      { key: 'groupid', type: 'selectapi', value: selectedDoctor?.groupid, label: 'Группа', api: 'api/schedule/site/groupsdrop' },
+      { key: 'groupid', type: 'selectapi', value: selectedDoctor?.groupid, label: 'Группа', api: 'api/schedule/groupsdrop/guz' },
       { key: 'pos', type: 'number', value: selectedDoctor?.pos.toString() || '0', label: 'Позиция' },
       { key: 'code', type: 'selectapi', value: selectedDoctor?.code, label: 'Врач', api: 'api/doctor/list', deftest: '-' },
       { key: 'uch', type: 'text', value: selectedDoctor?.uch, label: 'Участок (заполнить для участковых)' },
@@ -113,7 +113,7 @@ export default function ModuleSchedule({...props}) {
       { key: 'day5', type: 'text', value: selectedDoctor?.day5, label: 'Пятница (если не выбран врач)' },
       { key: 'day6', type: 'text', value: selectedDoctor?.day6, label: 'Суббота (если не выбран врач)' },
       { key: 'day7', type: 'text', value: selectedDoctor?.day7, label: 'Воскресенье (если не выбран врач)' },
-    ], (values: IDoctor) => callAPIPost('api/schedule/site/doctors/'+(selectedDoctor?'update':'insert')+'/'+(selectedDoctor?.id || uuid()), values, undefined, () => forceReloadDoctors(!reloadDoctors)),
+    ], (values: IDoctor) => callAPIPost('api/schedule/doctors/guz/'+(selectedDoctor?'update':'insert')+'/'+(selectedDoctor?.id || uuid()), values, undefined, () => forceReloadDoctors(!reloadDoctors)),
     [ 'groupid' ]
   );
 
@@ -131,7 +131,7 @@ export default function ModuleSchedule({...props}) {
     { key: 'export', name: 'Экспорт в HTML', iconProps: { iconName: 'icon-code' }, onClick: () => window.open('/api/schedule/updatehtml/'+datefrom, '_blank') },
   ];
 
-  useEffect(() => getItems('api/schedule/list/'+datefrom+'/'+doct, setItems, setLoading), [ datefrom, doct, reload ]);
+  useEffect(() => getItems('api/schedule/guztimetable/'+datefrom+'/'+doct, setItems, setLoading), [ datefrom, doct, reload ]);
   return (
     <Module {...props}>
       <Inline>

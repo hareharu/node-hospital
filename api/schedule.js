@@ -2,7 +2,7 @@ var router = require('express').Router();
 var func = require('../app/func');
 var conn = require('../app/conn');
 
-router.get('/list/:date/:filter', func.access('user'), async (req, res, next) => {
+router.get('/guztimetable/:date/:filter', func.access('user'), async (req, res, next) => {
   var dates = [];
   var monday = func.getMonday(new Date(req.params.date));
   for (var i = 1; i<=7; i++) {
@@ -127,14 +127,14 @@ router.get('/updatehtml/:date', func.access('admin'), async (req, res, next) => 
   conn.pgsql
   .any(req.query, [dates[1], dates[2], dates[3], dates[4], dates[5], dates[6], dates[7], (6 - func.getWeekNumber(new Date(req.params.date)) % 2), await func.getSettings('hospital_kodlpu')])
   .then(async doctors => {
-    await conn.whodb.runSync("update schedule set room = null, spec = null, name = null, day0 = null, day1 = null, day2 = null, day3 = null, day4 = null, day5 = null, day6 = null, day7 = null where not code is null");
+    await conn.whodb.runSync("update schedule set room = null, spec = null, name = null, day0 = null, day1 = null, day2 = null, day3 = null, day4 = null, day5 = null, day6 = null, day7 = null where not code is null and groupid in (select groupid from schedulegroups where type = 'guz')");
     if (doctors) {
       for (const doctor of doctors) {
-        await conn.whodb.runSync("update schedule set room = ?, spec = ?, name = ?, day0 = null, day1 = ?, day2 = ?, day3 = ?, day4 = ?, day5 = ?, day6 = ?, day7 = ? where code = ?", [doctor.room, doctor.spec, doctor.fio, doctor.day1, doctor.day2, doctor.day3, doctor.day4, doctor.day5, doctor.day6, doctor.day7, doctor.id]);
+        await conn.whodb.runSync("update schedule set room = ?, spec = ?, name = ?, day0 = null, day1 = ?, day2 = ?, day3 = ?, day4 = ?, day5 = ?, day6 = ?, day7 = ? where code = ? and groupid in (select groupid from schedulegroups where type = 'guz')", [doctor.room, doctor.spec, doctor.fio, doctor.day1, doctor.day2, doctor.day3, doctor.day4, doctor.day5, doctor.day6, doctor.day7, doctor.id]);
       }
     }
     var html = '';
-    const lists = await conn.whodb.allSync("select * from schedulegroups order by pos");
+    const lists = await conn.whodb.allSync("select * from schedulegroups where type = 'guz' order by pos");
     for (const list of lists) {
       html += '<h3>'+list.name+'</h3>';
       html += '<table border="1" width="812"><tbody>';
@@ -168,19 +168,19 @@ router.get('/updatehtml/:date', func.access('admin'), async (req, res, next) => 
   .catch(next);
 });
 
-router.post('/site/groups/:action/:id', func.access('admin'), (req, res, next) => {
+router.post('/groups/:type/:action/:id', func.access('user'), (req, res, next) => {
   switch (req.params.action) {
     case 'insert':
-      req.query = "insert into schedulegroups (pos, name, id) values (?, ?, ?)";
-      req.params = [ req.body.pos, req.body.name, req.params.id ];
+      req.query = "insert into schedulegroups (pos, name, id, type) values (?, ?, ?, ?)";
+      req.params = [ req.body.pos, req.body.name, req.params.id, req.params.type ];
       break;
     case 'update':
-      req.query = "update schedulegroups set pos = ?, name = ? where id = ?";
-      req.params = [ req.body.pos, req.body.name, req.params.id ];
+      req.query = "update schedulegroups set pos = ?, name = ? where id = ? and type = ?";
+      req.params = [ req.body.pos, req.body.name, req.params.id, req.params.type ];
       break;
     case 'delete':
-      req.query = "delete from schedulegroups where id = ?";
-      req.params = [ req.params.id ];
+      req.query = "delete from schedulegroups where id = ? and type = ?";
+      req.params = [ req.params.id, req.params.type ];
       break;
     default: return res.sendStatus(404);
   }
@@ -190,7 +190,7 @@ router.post('/site/groups/:action/:id', func.access('admin'), (req, res, next) =
   });
 });
 
-router.post('/site/doctors/:action/:id', func.access('admin'), (req, res, next) => {
+router.post('/doctors/:type/:action/:id', func.access('user'), (req, res, next) => {
   if (req.body.code === '' || req.body.code === '00000000-0000-0000-0000-000000000000') req.body.code = null;
   if (req.body.uch === '') req.body.uch = null;
   if (req.body.room === '') req.body.room = null;
@@ -225,15 +225,16 @@ router.post('/site/doctors/:action/:id', func.access('admin'), (req, res, next) 
   });
 });
 
-router.get('/site/groups', func.access('admin'), (req, res, next) => {
-  req.query = "select *, id as key from schedulegroups order by pos";  
-  conn.whodb.all(req.query, (error, data) => {
+router.get('/groups/:type', func.access('user'), (req, res, next) => {
+  req.query = "select *, id as key from schedulegroups where type = ? order by pos";
+  req.params = [ req.params.type ];
+  conn.whodb.all(req.query, req.params,(error, data) => {
     if (error) next(error);
     res.data = data; next();
   });
 });
 
-router.get('/site/doctors', func.access('admin'), (req, res, next) => {
+router.get('/doctors/:type', func.access('user'), (req, res, next) => {
   req.query = "select schedule.*, schedule.id as key, coalesce(schedulegroups.name, 'Без группы') as rowgroup,\
               case\
               when schedule.code is null then 'blue'\
@@ -241,16 +242,19 @@ router.get('/site/doctors', func.access('admin'), (req, res, next) => {
               else '' end as rowcolor\
               from schedule\
               left join schedulegroups on schedulegroups.id = schedule.groupid\
-              order by schedulegroups.pos, schedule.pos";  
-  conn.whodb.all(req.query, (error, data) => {
+              where schedulegroups.type = ?\
+              order by schedulegroups.pos, schedule.pos";
+  req.params = [ req.params.type ];
+  conn.whodb.all(req.query, req.params,(error, data) => {
     if (error) next(error);
     res.data = data; next();
   });
 });
 
-router.get('/site/groupsdrop', func.access('admin'), (req, res, next) => {
-  req.query = "select id as key, name as text from schedulegroups";
-  conn.whodb.all(req.query, (error, data) => {
+router.get('/groupsdrop/:type', func.access('user'), (req, res, next) => {
+  req.query = "select id as key, name as text from schedulegroups where type = ? order by name";
+  req.params = [ req.params.type ];
+  conn.whodb.all(req.query, req.params, (error, data) => {
     if (error) next(error);
     res.data = data; next();
   });
