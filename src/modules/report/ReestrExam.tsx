@@ -43,13 +43,25 @@ export default function ModuleReestrExam({...props}) {
   if (new Date(dateto) >= new Date('2006-11-15') && new Date(datefrom) <= new Date('2014-03-31')) {
     columnsAdult.push({key: 'b720267c-3dd8-4480-9472-d64d42c93742', name: 'ДД вред.', fieldName: 'vddo3', minWidth: 90, maxWidth: 110, isResizable: true});
   }
-  if (new Date(dateto) >= new Date('2013-01-01')) {
+  if (new Date(dateto) >= new Date('2013-01-01') && new Date(datefrom) <= new Date('2019-06-30')) {
     columnsAdult.push({key: '62778ed9-56a9-4482-bbfa-8f9c370382f6', name: 'ДД 1 в 3 (1 этап)', fieldName: 'v220f', minWidth: 90, maxWidth: 110, isResizable: true});
     columnsAdult.push({key: 'ca023afa-1fe6-4b67-9140-3c3fceb792d2', name: 'ДД 1 в 3 (2 этап)', fieldName: 'v220s', minWidth: 90, maxWidth: 110, isResizable: true});
   }
-  if (new Date(dateto) >= new Date('2018-04-01')) {
+  if (new Date(dateto) >= new Date('2018-04-01') && new Date(datefrom) <= new Date('2019-06-30')) {
     columnsAdult.push({key: '3e89e606-2fce-4a85-a387-593b2dce0ff8', name: 'ДД 1 в 2 (1 этап)', fieldName: 'v325f', minWidth: 90, maxWidth: 110, isResizable: true});
     columnsAdult.push({key: 'f78aec6d-f71a-49d7-9583-be0a7fbd7c2e', name: 'ДД 1 в 2 (2 этап)', fieldName: 'v325s', minWidth: 90, maxWidth: 110, isResizable: true});
+  }
+  if (new Date(dateto) >= new Date('2019-06-01')) {
+    columnsAdult.push({key: 'b70d8b4d-6a67-4dbd-a210-d2814e6dd0cc', name: 'Дисп. (1 этап)', fieldName: 'v220f', minWidth: 90, maxWidth: 110, isResizable: true});
+    columnsAdult.push({key: '56036c7f-ee12-44e4-9346-698f010c66bb', name: 'Дисп. (2 этап)', fieldName: 'v220s', minWidth: 90, maxWidth: 110, isResizable: true});
+  }
+  if (new Date(dateto) >= new Date('2021-07-01')) {
+    columnsAdult.push({key: '2e9d524c-f222-4e3b-bc66-792679da02fd', name: 'COVID (1 этап)', fieldName: 'v219f', minWidth: 90, maxWidth: 110, isResizable: true});
+    columnsAdult.push({key: '750923e1-a261-4049-8d8a-3e2ff29c85e8', name: 'COVID (2 этап)', fieldName: 'v219s', minWidth: 90, maxWidth: 110, isResizable: true});
+  }
+  if (new Date(dateto) >= new Date('2024-01-01')) {
+    columnsAdult.push({key: 'fd60bc66-bd2b-4e7f-b287-b8ab3617719e', name: 'Репрод. (1 этап)', fieldName: 'v336f', minWidth: 90, maxWidth: 110, isResizable: true});
+    columnsAdult.push({key: '3af63ab8-9ace-4946-896c-b4198c42ebd3', name: 'Репрод. (2 этап)', fieldName: 'v336s', minWidth: 90, maxWidth: 110, isResizable: true});
   }
   if (new Date(dateto) >= new Date('2016-01-01')) {
     columnsAdult.push({key: '0c56ea7d-b54b-4f98-a2a2-8bef10d18177', name: 'ПО', fieldName: 'v230', minWidth: 90, maxWidth: 110, isResizable: true});

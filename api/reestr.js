@@ -28,7 +28,7 @@ router.get('/setkodrlpu/:date', func.access('admin'), (req, res, next) => { req.
 router.post('/ddu/:age', func.access('user'), async (req, res, next) => {
   var where = "";
   switch (req.params.age) {
-    case 'adult': where += " and dd.typ_ddu  in ('_57603FF8Z','_57603FF90','_3SN189ZYO','_3SN18A20X','_3SP17EJR9','_3SN189MLY','_3SN189R1A','_3SN189TAG','_5IV0LYQIM','_5IY0X37UK')"; break;
+    case 'adult': where += " and dd.typ_ddu  in ('_57603FF8Z','_57603FF90','_3SN189ZYO','_3SN18A20X','_3SP17EJR9','_3SN189MLY','_3SN189R1A','_3SN189TAG','_5IV0LYQIM','_5IY0X37UK','_6TE0T8FL2','_6TE0T8FL4','_62W0TRSKF','_62W0TRSKG')"; break;
     case 'child': where += " and dd.typ_ddu  in ('_3U216KQGI','_3U216KQGJ','_3U216KQGK','_3V50G4N97','_3SN189VOG','_3SN18A4K8','_3U216KQGL','_3U216KQGM','_3V50G4V4I','_3SN189XMW','_5IY0X37UI','_5IY0X37UJ')"; break;
     default:
   }
@@ -92,6 +92,10 @@ router.post('/ddu/:age', func.access('user'), async (req, res, next) => {
   }
   req.query = "select name,\
               cast(sum(vall) as integer) as vall, \
+              cast(sum(v336f) as integer) as v336f, \
+              cast(sum(v336s) as integer) as v336s, \
+              cast(sum(v219f) as integer) as v219f, \
+              cast(sum(v219s) as integer) as v219s, \
               cast(sum(v325f) as integer) as v325f, \
               cast(sum(v325s) as integer) as v325s, \
               cast(sum(v220f) as integer) as v220f, \
@@ -111,7 +115,11 @@ router.post('/ddu/:age', func.access('user'), async (req, res, next) => {
               cast(sum(vddo2) as integer) as vddo2, \
               cast(sum(vddo3) as integer) as vddo3 from\
               (select " + select + " as name,\
-              count(distinct case when not dd.typ_ddu in ('_3SN18A20X','_57603FF90','_3SN18A4K8','_3U216KQGJ','_3V50G4N97','_3V50G4V4I','_5IY0X37UK') then dd.nz_ddu end) as vall,\
+              count(distinct case when not dd.typ_ddu in ('_3SN18A20X','_57603FF90','_3SN18A4K8','_3U216KQGJ','_3V50G4N97','_3V50G4V4I','_5IY0X37UK','_6TE0T8FL4','_62W0TRSKG') then dd.nz_ddu end) as vall,\
+              count(distinct case when dd.typ_ddu = '_6TE0T8FL2' then dd.nz_ddu end) as v336f,\
+              count(distinct case when dd.typ_ddu = '_6TE0T8FL4' then dd.nz_ddu end) as v336s,\
+              count(distinct case when dd.typ_ddu = '_62W0TRSKF' then dd.nz_ddu end) as v219f,\
+              count(distinct case when dd.typ_ddu = '_62W0TRSKG' then dd.nz_ddu end) as v219s,\
               count(distinct case when dd.typ_ddu = '_57603FF8Z' then dd.nz_ddu end) as v325f,\
               count(distinct case when dd.typ_ddu = '_57603FF90' then dd.nz_ddu end) as v325s,\
               count(distinct case when (dd.typ_ddu = '_3SN189ZYO' or dd.typ_ddu = '_5IV0LYQIM') then dd.nz_ddu end) as v220f,\
