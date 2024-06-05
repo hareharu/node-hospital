@@ -13,6 +13,7 @@ router.get('/login', func.access('guest'), (req, res, next) => {
     login: process.env.KKB_USER,
     password: process.env.KKB_PASS
   });
+  authorization = authorization.replace(/[\u00A0-\uFFFF]/g, (char) => { return '\\u' + char.charCodeAt(0).toString(16).padStart(4, '0'); });
   var options = {
     host: 'medics.medgorod.ru',
     path: '/api/app/login',
