@@ -15,7 +15,7 @@ router.get('/login', func.access('guest'), (req, res, next) => {
   });
   var options = {
     host: 'medics.medgorod.ru',
-    path: '/api/organization/user/login',
+    path: '/api/app/login',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
