@@ -30,7 +30,7 @@ jobs:
       run: ./pack-app.ps1
       shell: pwsh
     - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: who_${{ env.CURRENT_BRANCH }}_${{ env.REACT_APP_BUILD }}
         path: temp/
