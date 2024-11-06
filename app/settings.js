@@ -1,6 +1,7 @@
 var conn = require('./conn');
 
 var settings = {
+  esvs_idmu: { type: 'input', description: 'Региональный код МО', default: ''},
   hospital_kodlpu: { type: 'input', description: 'Код МО в МИС Госпиталь', default: ''},
   videoarchive_folder: { type: 'input', description: 'Папка с видеороликами для модуля "Архив видеороликов"', default: ''},
   system_clientname: { type: 'input', description: 'Текст отображаемый в заголовке боковой панели', default: 'node-hospital'},
@@ -11,6 +12,12 @@ var settings = {
   kmiacvideo_filter: { type: 'input', description: 'Фильтр для модуля "Видеоконференции"', default: ''},
   loginform_tip: { type: 'input', description: 'Сообщение на кнопке авторизации', default: ''},
   kkbparser_sessionid: { type: 'input', description: 'PHPSESSID для запросов на портале ККБ', default: ''},
+  hospital_remd: { type: 'input', description: 'Адрес сервиса "Документы и случаи лечения"', default: ''},
+  remd_endpoint: { type: 'input', description: 'Адрес сервиса запроса данных из РЭМД', default: ''},
+  remd_clientid: { type: 'input', description: 'ID клиента для работы с РЭМД', default: ''},
+  remd_callback: { type: 'input', description: 'Адрес сервиса обратного вызова для РЭМД', default: ''},
+  kmiac_endpoint: { type: 'input', description: 'Адрес сервиса запроса данных из КМИАЦ', default: ''},
+  krasmed_endpoint: { type: 'input', description: 'Адрес сервиса запроса данных из ТФОМС', default: ''},
 };
 
 var init = async () => {

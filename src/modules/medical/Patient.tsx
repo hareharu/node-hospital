@@ -6,11 +6,12 @@ export default function ModulePatient({...props}) {
   const [panelRZN, setPanelRZN] = useState(false);
   const [resultRZN, setResultRZN] = useState<IResultRZN|undefined>(undefined);
   const [loadingRZN, setLoadingRZN] = useState(false);
-  // const [enp, setEnp] = useState('');
+  const [enp, setEnp] = useState('');
   const [fam, setFam] = useState('');
   const [nam, setNam] = useState('');
   const [oth, setOth] = useState('');
   const [day, setDay] = useState('');
+  const [snils, setSnils] = useState('');
   const onPatientChange = (value?: string) => {
     const disabled = value === undefined;
     setCurrentPatient(value);
@@ -26,19 +27,31 @@ export default function ModulePatient({...props}) {
       // enp
     }, setResultRZN, setLoadingRZN);
   }
+  const onSearchREMD = () => {
+    getItemsPost('api/patient/remdlink', {
+      surname: fam,
+      name: nam,
+      patronymic: oth,
+      birthDate: day,
+      unifiedPolicyNumber: enp,
+      snils: snils
+    }, remdlink => window.open(remdlink, '_blank'));
+  }
   return (
     <Module {...props}>
       <Inline>
         <PatientPicker onChange={onPatientChange}/>  
         <Button icon='search' text='РЗН' disabled={disabled} onClick={onSearchRZN}/>
+        <Button icon='archive' text='РЭМД' disabled={disabled} onClick={onSearchREMD}/>
         <SaveToExcelPatientInfo/>
       </Inline>
       <PatientInfo kod={currentPatient} onChange={(patient) => {
-        // setEnp(patient[0]);
+        setEnp(patient[0]);
         setFam(patient[1]);
         setNam(patient[2]);
         setOth(patient[3]);
         setDay(patient[4]);
+        setSnils(patient[5]);
       }}/>
       <Panel loading={loadingRZN} isOpen={panelRZN} onDismiss={() => setPanelRZN(false)} text='Информация из РЗН'>
         <PatientRZN result={resultRZN}/>

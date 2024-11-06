@@ -5,7 +5,7 @@ var conn = require('../app/conn');
 router.get('/get/info/:kod', func.access('doctor'), (req, res, next) => {
   req.query = "select rtrim(p.pcode) as pcode, p.kod_snils as snils, \
               to_char(p.day,'DD.MM.YYYY') as day, to_char(p.day_death,'DD.MM.YYYY') as day_death, to_char(p.day_out,'DD.MM.YYYY') as day_out, \
-              p.pol, rtrim(p.fam)||' '||rtrim(p.nam)||' '||rtrim(p.oth) as fio, rtrim(p.fam) as rawfam, rtrim(p.nam) as rawnam, rtrim(p.oth) as rawoth, p.day as rawday, p.tel as telephone \
+              p.pol, rtrim(p.fam)||' '||rtrim(p.nam)||' '||rtrim(p.oth) as fio, rtrim(p.fam) as rawfam, rtrim(p.nam) as rawnam, rtrim(p.oth) as rawoth, p.day as rawday, REPLACE(REPLACE(p.kod_snils, '-', ''), ' ', '') as rawsnils, p.tel as telephone \
               from paspor p where p.kod = $1";
   conn.pgsql
   .one(req.query, req.params.kod)
@@ -99,7 +99,7 @@ router.get('/get/info/:kod', func.access('doctor'), (req, res, next) => {
   if(res.patient['telephone']) {
     patient.push({'field':'телефон', 'value': res.patient['telephone']});
   }
-  res.data = { patient: patient, enp: enp, fam: res.patient['rawfam'], nam: res.patient['rawnam'], oth: res.patient['rawoth'], day: res.patient['rawday'] };
+  res.data = { patient: patient, enp: enp, fam: res.patient['rawfam'], nam: res.patient['rawnam'], oth: res.patient['rawoth'], day: res.patient['rawday'], snils: res.patient['rawsnils'] };
   // res.enp = enp;
   next();
 });
@@ -337,6 +337,35 @@ router.post('/picker', func.access('doctor'), (req, res, next) => {
   .any(req.query, { pcode:req.body.pcode, fam:req.body.fam, nam:req.body.nam, oth:req.body.oth })
   .then(data => { res.data = data; next(); })
   .catch(next);
+});
+
+router.post('/remdlink', func.access('doctor'), async (req, res, next) => {
+  var startDate = new Date();
+  var endDate = new Date();
+  startDate.setFullYear(startDate.getFullYear() - 5);
+  var data = {
+    surname: req.body.surname,
+    name: req.body.name,
+    patronymic: req.body.patronymic,
+    birthDate: req.body.birthDate,
+    unifiedPolicyNumber: req.body.unifiedPolicyNumber,
+    snils: req.body.snils,
+    startDate: startDate.toISOString().substring(0, 10),
+    endDate: endDate.toISOString().substring(0, 10),
+    remdEndpoint: await func.getSettings('remd_endpoint'),
+    remdClientEntityID: await func.getSettings('remd_clientid'),
+    remdIDMU: await func.getSettings('esvs_idmu'),
+    remdReplyTo: await func.getSettings('remd_callback'),
+    kmiacEndpoint: await func.getSettings('kmiac_endpoint'),
+    krasmedEndpoint: await func.getSettings('krasmed_endpoint'),
+    krasmedUsername: process.env.RZN_USER,
+    krasmedPassword: process.env.RZN_PASS
+  }
+  var link = await func.getSettings('hospital_remd');
+  if (link.charAt(link.length - 1) == '/') link = link.substring(0, link.length - 1);
+  link += '/?q=' + Buffer.from(JSON.stringify(data)).toString('base64').replaceAll('+','-').replaceAll('/','_');
+  res.data = link;
+  next();
 });
 
 module.exports = router;

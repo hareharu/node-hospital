@@ -157,7 +157,7 @@ public getInfo = () => {
       this.setState({ itemsPatient : json.data.patient, enp: json.enp }); 
       this.setState({ loadingPatient :false }); 
       if (this.props.onChange !== undefined) {
-        this.props.onChange([json.data.enp, json.data.fam, json.data.nam, json.data.oth, json.data.day]);
+        this.props.onChange([json.data.enp, json.data.fam, json.data.nam, json.data.oth, json.data.day, json.data.snils]);
       }
   })
   .catch(err => showMessage(err));
